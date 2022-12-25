@@ -23,4 +23,6 @@ public class Image {
     private String fileType;
     @Lob
     private byte[] data;
+    
+
 }
