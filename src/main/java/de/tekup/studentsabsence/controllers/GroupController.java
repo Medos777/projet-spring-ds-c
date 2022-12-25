@@ -140,6 +140,25 @@ public class GroupController {
     @PostMapping("/{id}/add-absences")
     public String addAbsence(@PathVariable long id, @Valid Absence absence, BindingResult bindingResult, @RequestParam(value = "students", required = false) List<Student> students, Model model) {
         //TODO Complete the body of this method
+        if (students == null || students.isEmpty()) {
+            model.addAttribute("errorMessage", "You must select at least one student");
+            Group group = groupService.getGroupById(id);
+            model.addAttribute("group", group);
+            model.addAttribute("groupSubjects", groupSubjectService.getSubjectsByGroupId(id));
+            model.addAttribute("students", group.getStudents());
+            model.addAttribute("absenceService", absenceService);
+            return "groups/show";
+        }
+
+        students.forEach(student -> {
+            Absence newAbsence = new Absence();
+            newAbsence.setStartDate(absence.getStartDate());
+            newAbsence.setHours(absence.getHours());
+            newAbsence.setStudent(student);
+            newAbsence.setSubject(absence.getSubject());
+            absenceService.addAbsence(newAbsence);
+        });
+
         return "redirect:/groups/"+id+"/add-absences";
     }
 
